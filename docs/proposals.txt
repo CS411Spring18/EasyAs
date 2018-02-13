@@ -1,4 +1,4 @@
-Our first idea is to run personality insight on a user's twitter followers and followed. We will use IBM watson's personality insights API to find who’s personality is most similar to yours.
+Our first idea is to run personality insight analysis on a user's twitter account. We can use IBM watson's personality insights API to generate a personality based on one's twitter posts. We will also generate a personality for the user's followers and those they follow. We will use this to find who’s personality is most similar to the user's.
 
 
 Our second project idea incorporates the use of the yelp API and aws rekognition to be able to search restaurants based on a specific dishes and displays price differences and ratings according to location. Aws will parse menus using recognition and search restaurants using yelp. We will also include the button API to enable the user  to call uber to the desired restaurant. Currently, when using the yelp app, a user must manually go back and forth between different restaurants to be able to compare and see prices and differences in menu. We thought that we could eliminate this inconvenience by creating this project.
