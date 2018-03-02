@@ -1,0 +1,29 @@
+ Jacob Kozol
+Vee Nguyen 
+Ibrahim Shaikh
+Rhonda Mak
+CS411 A3 
+User Stories
+
+Challenge: Find out which of your Twitter followers is most similar to you. 
+
+Description: The user will sign up using their Twitter account. Using the Twitter API we will have access to their tweets, followers, following, etc. We will then use this data and process it using IBM Watson’s personality insights API and then return the top three most similar followers to the user, based on the sentiment analysis. Young adults (high school/college) would want to use our app as a way to gain new and interesting insights about their Twitter network. Social media influencers would want to use our app as a way to see what type market they are reaching. They could possibly pivot their posts in order to appeal to a market that they want to reach or continue what they are doing.
+
+Use cases:
+As a user, I want to be able to login to the application using my Twitter account.
+
+As a user, I want to be able to see sentiment analysis on my tweets.
+- What could go wrong: too few posts to have a strong sentiment analysis
+-- If the user has zero posts, we will return an error statement that says we have zero posts
+-- We will include a confidence score to show how reliable the analysis is.	 
+
+As a user, I want to see the top three matched followers on the result page.
+- What could go wrong: too many followers
+-- We will only analyze a manageable subset of followers if a user’s follower count exceeds a certain threshold, say, 10,000
+- What could go wrong: too few followers
+-- We will still analyze the user’s tweets and followers’ tweets but will also include a confidence score to indicate the strength of the analysis. If the user has zero followers, we will not run the analysis and return a message telling users that they have zero followers. 
+
+As a user, I want to be able to post the results to my Twitter from the results page.
+
+
+
