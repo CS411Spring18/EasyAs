@@ -1,0 +1,13 @@
+
+We will create a search page where a user can enter a Twitter user's username. When the user hits search, it will return that the specified Twitter user's timeline, if it is public. 
+
+This API endpoint retrieves a specified user's timeline: 
+https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-user_timeline.html
+
+Not related to Saturday (3/24) front-end meeting but we also designed a login page and a register page (probably will be a Typeform). Pics enclosed. 
+
+
+What we need from backend team:
+- what api routes should we send the data to?
+- we have a pretty good understanding of how we should move data between apis, so let us know if you need clarification.
+
