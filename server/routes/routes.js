@@ -5,10 +5,10 @@ var twitterApi = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
 var router = express.Router();
 var bodyParser = require('body-parser');
 var User = require('../../models/User');
-var bearerToken = require('../../config.js').bearerToken
+var bearerToken = require('../../config.js').bearerToken;
 
 router.get('/', function(req, res){
-  res.render('index')
+  res.render('index');
 });
 
 

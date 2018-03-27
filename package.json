@@ -22,8 +22,6 @@
     "start": "npm run webpack && nodemon --exec babel-node -- bin/www"
   },
   "devDependencies": {
-    "babel-eslint": "^7.2.3",
-    "eslint": "^3.19.0",
-    "eslint-config-google": "^0.9.1"
+    "eslint": "^3.19.0"
   }
 }
