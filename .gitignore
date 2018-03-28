@@ -4,10 +4,10 @@
 config.js
 
 # bundle
-/client/bundle.js
+client/bundle.js
 
 # dependencies
-/node_modules
+node_modules/
 
 # testing
 /coverage
@@ -24,6 +24,7 @@ config.js
 
 # Optional eslint cache
 .eslintcache
+.eslintrc.json
 
 # Optional REPL history
 .node_repl_history
@@ -40,3 +41,4 @@ config.js
 # next.js build output
 .next
 .vscode
+/client/bundle.js
