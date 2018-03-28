@@ -37,7 +37,6 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state.tweets);
     return (
       <div>
         <main role="main" className="container">
@@ -52,11 +51,13 @@ class App extends Component {
             <h1>Results:</h1>
             <div className="table-responsive">
               <table className="table">
-                {this.state.tweets.map((tweet, i) =>
-                  <tr>
-                    <td key={i}>{tweet}</td>
-                  </tr>
-                )}
+                <tbody>
+                  {this.state.tweets.map((tweet, i) =>
+                    <tr key={i}>
+                      <td>{tweet}</td>
+                    </tr>
+                  )}
+                </tbody>
               </table>
             </div>
           </div>
