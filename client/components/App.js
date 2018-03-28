@@ -37,20 +37,30 @@ class App extends Component {
   }
 
   render() {
+    console.log(this.state.tweets);
     return (
       <div>
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Name:
-            <input type="text" value={this.state.value} onChange={this.handleChange} />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
-        <ul>
-          {this.state.tweets.map((tweet, i) =>
-            <li key={i}>{tweet}</li>
-          )}
-        </ul>
+        <main role="main" className="container">
+          <div className="jumbotron">
+            <h1>Twitter Username:</h1>
+            <form className="form-inline" onSubmit={this.handleSubmit}>
+              <input className="form-control" aria-label="Username" onChange={this.handleChange}></input>
+              <button className="btn btn-lg btn-primary" display="inline">Search</button>
+            </form>
+          </div>
+          <div className="jumbotron">
+            <h1>Results:</h1>
+            <div className="table-responsive">
+              <table className="table">
+                {this.state.tweets.map((tweet, i) =>
+                  <tr>
+                    <td key={i}>{tweet}</td>
+                  </tr>
+                )}
+              </table>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
