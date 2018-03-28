@@ -12,6 +12,7 @@ app.use(express.static(path.join(__dirname, '../client')));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: false}));
 
+// This is a proof of concept database. Will hide the user and pass for our actual one.
 mongoose.connect('mongodb://littlebirdie:littlebirdie1@ds135983.mlab.com:35983/littlebirdie');
 
 app.use('/', router);
