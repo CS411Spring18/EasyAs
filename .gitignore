@@ -42,3 +42,4 @@ node_modules/
 .next
 .vscode
 /client/bundle.js
+package-lock.json
