@@ -1,0 +1,47 @@
+We are using MongoDB.
+
+users: [
+  {
+    username: "myusername" // The users twitter username will be our key.
+    // This contains the content and some metadata for a users tweets
+    tweets: [
+      {
+        content: "Thanks everyone for another Epic #Belief night!",
+        contenttype": "text/plain",
+        created: 1445302792000,
+        id: "656273592485810176",
+        language: "en"
+      },
+      ...
+    ],
+    // This contains the twitter usernames for our user's matches
+    matches: [
+      1: "username1",
+      2: "username2",
+      ...
+    ],
+    // This conts the Big 5 personality trait data from Watson
+    personality: [
+      {
+        trait_id: "big5_openness",
+        name: "Openness",
+        category: "personality",
+        percentile: 0.8011555009552995,
+        raw_score: 0.7756540425503807,
+        significant: true,
+        children: [
+          {
+            trait_id: "facet_adventurousness",
+            name: "Adventurousness",
+            category: "personality",
+            percentile: 0.8975586904731845,
+            raw_score: 0.5499070403121895,
+            significant: true
+          },
+          ...
+        ]
+      },
+      ...
+    ]
+  }
+]
