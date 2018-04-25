@@ -29,17 +29,28 @@ router.route('/fetchUser')
   };
 
   user.name = req.body.name;
-  request(options, function(error, response, body) {
-    if (!error) {
-      user.tweets = body;
-      user.save(function(err) {
-        if (err)
-          res.send(err);
-        res.send(body);
+
+  User.findOne({ name: user.name }, function (err, response) {
+    if (err) {
+      res.send(err);
+    // If there's no data in the database, make the API call to twitter
+    } else if (response == null) {
+      request(options, function (error, response, body) {
+        if (!error) {
+          user.tweets = body;
+          user.save(function (err) {
+            if (err)
+              res.send(err);
+            res.send(body);
+          });
+        }
+        else {
+          res.status(500).json({ error: error });
+        }
       });
-    }
-    else {
-      res.status(500).json({ error: error });
+    // If data is found in cache, return it
+    } else {
+      res.send(response.tweets);
     }
   });
 });
