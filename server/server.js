@@ -1,6 +1,7 @@
 //server/server.js
 var express = require('express');
-var router = require('./routes/routes.js')
+var router = require('./routes/routes.js');
+var twitterOAuth = require('./routes/oauth.js');
 var path = require('path');
 var bodyParser = require('body-parser');
 var app = express();
@@ -15,6 +16,6 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: false}));
 // This is a proof of concept database. Will hide the user and pass for our actual one.
 mongoose.connect('mongodb://testUser:testPass@ds135983.mlab.com:35983/littlebirdie');
 
-app.use('/', router);
+app.use('/', twitterOAuth);
 
 module.exports=app;
