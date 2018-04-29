@@ -6,7 +6,7 @@ import Login from './components/Login';
 export const Routes = () => (
   <Switch>
     <Route exact path='/' component={App} />
-    <Route exact path='/login' component={Login} />
+    <Route path='/login' component={Login} />
   </Switch>
 );
 
