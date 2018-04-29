@@ -6,7 +6,7 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 var User = require('../../models/User');
 var bearerToken = require('../../config.js').bearerToken;
-// var profile = require('../../profileJacob.json');
+var profile = require('../../profile.json');
 
 router.get('/', function(req, res){
   res.render('index');
@@ -71,8 +71,10 @@ function formatTwitter(jsonResponse) {
     };
     formattedTweets.contentItems.push(tweet);
   }
-  // console.log(JSON.stringify(formattedTweets));
-  fetchPersonality(JSON.stringify(formattedTweets));
+
+  const formattedTweetsJSON = JSON.stringify(formattedTweets);
+  console.log(formattedTweetsJSON);
+  // fetchPersonality(formattedTweetsJSON);
 }
 
 function fetchPersonality(body) {
@@ -84,7 +86,8 @@ function fetchPersonality(body) {
   });
 
   var params = {
-    // Get the content from the JSON file.
+    // if you have a profile.json in the project root directory
+    // content: profile
     content: body,
     content_type: 'application/json',
     raw_scores: true
@@ -97,6 +100,18 @@ function fetchPersonality(body) {
       console.log(JSON.stringify(response, null, 2));
     }
   );
+}
+
+function formatWatson(jsonResponse) {
+  var formattedPersonality = [];
+  for (var i=0; i < jsonResponse.length; i++) {
+    var trait = {
+      "trait_id": jsonResponse[i].text,
+      "percentile": "text/plain",
+      "raw_score": jsonResponse[i].id_str,
+    };
+    formattedPersonality.contentItems.push(trait);
+  }
 }
 
 module.exports = router;
