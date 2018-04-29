@@ -19,18 +19,13 @@ class Login extends Component {
   handleChange(event) {
     this.setState({value: event.target.value});
   }
-  console.log('helllo');
+  
+  handleSubmit(event) {
+  }
+
   render() {
     return (
       <div>
-        {/*<main role="main" className="container">*/}
-          {/*<h1>Hello</h1>*/}
-        {/*</main>*/}
-
-
-
-
-
         <main role="main" className="container">
           <div className="jumbotron">
             <h1>Twitter Username:</h1>
