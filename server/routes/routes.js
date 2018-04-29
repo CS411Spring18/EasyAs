@@ -37,29 +37,10 @@ router.route('/fetchUser')
       res.send(err);
     // If there's no data in the database, make the API call to twitter
     } else if (response == null) {
-      var PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
-      var personality_insights = new PersonalityInsightsV3({
-        username: '34442ff0-5fd6-4772-ba9e-9e7a1fe3dad5',
-        password: 'heBS6eLUnyDQ',
-        version_date: '2017-10-13'
-      });
-
-      var params = {
-        // Get the content from the JSON file.
-        content: profile,
-        content_type: 'application/json',
-        raw_scores: true
-      };
-
-      personality_insights.profile(params, function(error, response) {
-        if (error)
-          console.log('Error:', error);
-        else
-          console.log(JSON.stringify(response, null, 2));
-        }
-      );
       request(options, function (error, response, body) {
         if (!error) {
+          console.log('pre');
+          formatTwitter(body);
           user.tweets = body;
           user.save(function (err) {
             if (err)
@@ -77,5 +58,34 @@ router.route('/fetchUser')
     }
   });
 });
+
+function formatTwitter(jsonResponse) {
+  console.log('here');
+  console.log(jsonResponse);
+}
+
+function fetchPersonality(req, res) {
+  var PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
+  var personality_insights = new PersonalityInsightsV3({
+    username: '34442ff0-5fd6-4772-ba9e-9e7a1fe3dad5',
+    password: 'heBS6eLUnyDQ',
+    version_date: '2017-10-13'
+  });
+
+  var params = {
+    // Get the content from the JSON file.
+    content: profile,
+    content_type: 'application/json',
+    raw_scores: true
+  };
+
+  personality_insights.profile(params, function(error, response) {
+    if (error)
+      console.log('Error:', error);
+    else
+      console.log(JSON.stringify(response, null, 2));
+    }
+  );
+}
 
 module.exports = router;
