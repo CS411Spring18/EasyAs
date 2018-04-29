@@ -6,11 +6,11 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 var User = require('../../models/User');
 var bearerToken = require('../../config.js').bearerToken;
+var profile = require('../../profile.json');
 
 router.get('/', function(req, res){
   res.render('index');
 });
-
 
 router.route('/fetchUser')
 .post(function(req,res) {
@@ -37,6 +37,8 @@ router.route('/fetchUser')
     } else if (response == null) {
       request(options, function (error, response, body) {
         if (!error) {
+          console.log('pre');
+          formatTwitter(body);
           user.tweets = body;
           user.save(function (err) {
             if (err)
@@ -50,9 +52,66 @@ router.route('/fetchUser')
       });
     // If data is found in cache, return it
     } else {
+      formatTwitter(response.tweets);
       res.send(response.tweets);
     }
   });
 });
+
+function formatTwitter(jsonResponse) {
+  var formattedTweets = {
+    "contentItems": [],
+  };
+  for (var i=0; i < jsonResponse.length; i++) {
+    var tweet = {
+      "content": jsonResponse[i].text,
+      "contenttype": "text/plain",
+      "id": jsonResponse[i].id_str,
+      "language": jsonResponse[i].lang
+    };
+    formattedTweets.contentItems.push(tweet);
+  }
+
+  const formattedTweetsJSON = JSON.stringify(formattedTweets);
+  console.log(formattedTweetsJSON);
+  // fetchPersonality(formattedTweetsJSON);
+}
+
+function fetchPersonality(body) {
+  var PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
+  var personality_insights = new PersonalityInsightsV3({
+    username: '34442ff0-5fd6-4772-ba9e-9e7a1fe3dad5',
+    password: 'heBS6eLUnyDQ',
+    version_date: '2017-10-13'
+  });
+
+  var params = {
+    // if you have a profile.json in the project root directory
+    // content: profile
+    content: body,
+    content_type: 'application/json',
+    raw_scores: true
+  };
+
+  personality_insights.profile(params, function(error, response) {
+    if (error)
+      console.log('Error:', error);
+    else
+      console.log(JSON.stringify(response, null, 2));
+    }
+  );
+}
+
+function formatWatson(jsonResponse) {
+  var formattedPersonality = [];
+  for (var i=0; i < jsonResponse.length; i++) {
+    var trait = {
+      "trait_id": jsonResponse[i].text,
+      "percentile": "text/plain",
+      "raw_score": jsonResponse[i].id_str,
+    };
+    formattedPersonality.contentItems.push(trait);
+  }
+}
 
 module.exports = router;
