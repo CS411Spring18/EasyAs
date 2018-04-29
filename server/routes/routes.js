@@ -6,13 +6,11 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 var User = require('../../models/User');
 var bearerToken = require('../../config.js').bearerToken;
-var profile = require('../../profile.json');
+// var profile = require('../../profileJacob.json');
 
 router.get('/', function(req, res){
   res.render('index');
 });
-
-
 
 router.route('/fetchUser')
 .post(function(req,res) {
@@ -54,17 +52,30 @@ router.route('/fetchUser')
       });
     // If data is found in cache, return it
     } else {
+      formatTwitter(response.tweets);
       res.send(response.tweets);
     }
   });
 });
 
 function formatTwitter(jsonResponse) {
-  console.log('here');
-  console.log(jsonResponse);
+  var formattedTweets = {
+    "contentItems": [],
+  };
+  for (var i=0; i < jsonResponse.length; i++) {
+    var tweet = {
+      "content": jsonResponse[i].text,
+      "contenttype": "text/plain",
+      "id": jsonResponse[i].id_str,
+      "language": jsonResponse[i].lang
+    };
+    formattedTweets.contentItems.push(tweet);
+  }
+  // console.log(JSON.stringify(formattedTweets));
+  fetchPersonality(JSON.stringify(formattedTweets));
 }
 
-function fetchPersonality(req, res) {
+function fetchPersonality(body) {
   var PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
   var personality_insights = new PersonalityInsightsV3({
     username: '34442ff0-5fd6-4772-ba9e-9e7a1fe3dad5',
@@ -74,7 +85,7 @@ function fetchPersonality(req, res) {
 
   var params = {
     // Get the content from the JSON file.
-    content: profile,
+    content: body,
     content_type: 'application/json',
     raw_scores: true
   };
