@@ -16,6 +16,6 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: false}));
 // This is a proof of concept database. Will hide the user and pass for our actual one.
 mongoose.connect('mongodb://testUser:testPass@ds135983.mlab.com:35983/littlebirdie');
 
-app.use('/', twitterOAuth);
+app.use('/', router);
 
 module.exports=app;

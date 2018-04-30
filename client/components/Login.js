@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import '../css/App.css';
 // import axios from 'axios';
-var querystring = require('querystring');
-
-
+import { withRouter } from "react-router-dom";
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -32,7 +30,7 @@ class Login extends Component {
             <form className="form-signin">
               <h1 className="h3 mb-3 font-weight-normal">Please Sign In</h1>
 
-              <button className="btn btn-lg btn-primary btn-block" type="submit">Twitter Login</button>
+              <button className="btn btn-lg btn-primary btn-block" type="submit" onSubmit={() => this.props.history.push('/sessions/connect')}>Twitter Login</button>
             </form>
           </div>
 
