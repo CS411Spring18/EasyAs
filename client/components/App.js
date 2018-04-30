@@ -3,7 +3,6 @@ import '../css/App.css';
 import axios from 'axios';
 var querystring = require('querystring');
 var BarChart = require("react-chartjs").Bar;
-var Modal = require('react-bootstrap').Modal;
 
 class App extends Component {
   constructor(props) {
@@ -12,44 +11,6 @@ class App extends Component {
       value: '',
       tweets: [],
       resultsShow: false,
-      chartData: {labels: ["Openness", "Neuroticsm", "Extroversion", "Conscienciousness", "Agreeableness"],
-                  datasets: [
-                    {
-                      label: "Percentile",
-                      backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-                      data: [80,50,64,81,80]
-                    }
-                  ]
-      },
-      chartOptions: {scales: {
-                      yAxes: [{
-                        barPercentage: 0.5,
-                        gridLines: {
-                          display: false
-                        }
-                      }],
-                        xAxes: [{
-                        gridLines: {
-                          zeroLineColor: "black",
-                          zeroLineWidth: 2
-                        },
-                        ticks: {
-                          min: 0,
-                          max: 100,
-                          stepSize: 10
-                        },
-                        scaleLabel: {
-                          display: true,
-                          labelString: "Percentile"
-                        }
-                      }]
-                    },
-                    elements: {
-                      rectangle: {
-                        borderSkipped: 'left',
-                      }
-                    }
-                  },
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -61,6 +22,10 @@ class App extends Component {
   }
 
   handleSubmit(event) {
+    this.setState({
+      resultsShow: true,
+    });
+
     axios.post('/fetchUser',
       querystring.stringify({
         name: this.state.value,
@@ -99,7 +64,7 @@ class App extends Component {
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
 
-          <BarChart data={this.state.chartData} options={this.state.chartOptions} width="600" height="250" style={{}}/>
+          <Chart />
           <button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleResults.bind(this)}>Find Your Top 5 Matches</button>
 
           <hr/>
@@ -182,6 +147,51 @@ const Results = () => (
     <p className="lead">Here are your most similar followers:</p>
     <BarChart data={data.chartData} options={data.chartOptions} width="600" height="250" style={{}}/>
   </div>
+);
+
+var chartInfo = {
+  chartData: {labels: ["Openness", "Neuroticsm", "Extroversion", "Conscienciousness", "Agreeableness"],
+    datasets: [
+      {
+        label: "Percentile",
+        backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+        data: [80,50,64,81,80]
+      }
+    ]
+  },
+  chartOptions: {scales: {
+    yAxes: [{
+      barPercentage: 0.5,
+      gridLines: {
+        display: false
+      }
+    }],
+    xAxes: [{
+      gridLines: {
+        zeroLineColor: "black",
+        zeroLineWidth: 2
+      },
+      ticks: {
+        min: 0,
+        max: 100,
+        stepSize: 10
+      },
+      scaleLabel: {
+        display: true,
+        labelString: "Percentile"
+      }
+    }]
+  },
+    elements: {
+      rectangle: {
+        borderSkipped: 'left',
+      }
+    }
+  }
+}
+
+const Chart = () => (
+  <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250" style={{}}/>
 )
 
 export default App;
