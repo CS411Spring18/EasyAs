@@ -19,31 +19,37 @@ router.route('/fetchUser')
       res.send(err);
     // If there's no data in the database create a user
     } else if (response == null) {
-      axios.get('https://api.twitter.com/1.1/statuses/user_timeline.json', {
-        params: {
-          "screen_name": req.body.name,
-          "count": 200,
-        },
-        headers: {
-          "Authorization": "Bearer " + bearerToken
-        }
-      })
-      .then(response => response.data)
-      .then(twitterData => formatTwitterResponse(twitterData))
-      .then(tweets => {
-        user.tweets = tweets;
-        return getProfile(tweets)
-      })
-      .then(personalityProfile => formatWatsonResponse(personalityProfile))
-      .then(personalityTraits => {
-        user.personality = personalityTraits;
+      let userPromise = createUser(user.name)
+      userPromise.then((user) => {
         user.save();
-        res.send(user.personality);
+        res.send(user);
       })
-      .catch((error) => {
-        res.status(500).json({ error: error });
-      });
-    // If data is found in cache, return it
+      .catch((error) => res.status(500).json({ error: error }));
+    //   axios.get('https://api.twitter.com/1.1/statuses/user_timeline.json', {
+    //     params: {
+    //       "screen_name": req.body.name,
+    //       "count": 200,
+    //     },
+    //     headers: {
+    //       "Authorization": "Bearer " + bearerToken
+    //     }
+    //   })
+    //   .then(response => response.data)
+    //   .then(twitterData => formatTwitterResponse(twitterData))
+    //   .then(tweets => {
+    //     user.tweets = tweets;
+    //     return getProfile(tweets)
+    //   })
+    //   .then(personalityProfile => formatWatsonResponse(personalityProfile))
+    //   .then(personalityTraits => {
+    //     user.personality = personalityTraits;
+    //     user.save();
+    //     res.send(user.personality);
+    //   })
+    //   .catch((error) => {
+    //     res.status(500).json({ error: error });
+    //   });
+    // // If data is found in cache, return it
     } else {
       res.send(response.personality);
     }
@@ -109,7 +115,6 @@ const createUser = (username) =>
     .then(personalityProfile => formatWatsonResponse(personalityProfile))
     .then(personalityTraits => {
       user.personality = personalityTraits;
-      user.save();
       return user;
     })
     .then(user => resolve(user))
