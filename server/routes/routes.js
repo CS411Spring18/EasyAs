@@ -99,10 +99,11 @@ router.route('/fetchUser')
     .then(matches => {
       myUser.matches = matches;
       myUser.save();
+      console.log(myUser);
       res.send(myUser);
     });
   });
-  });
+});
 
 // Generate the Oauth request token
 router.get('/sessions/connect', function (req, res) {
