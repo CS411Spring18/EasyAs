@@ -1,14 +1,14 @@
 //server/routes/routes.js
-var express = require('express');
-var axios = require('axios');
-var router = express.Router();
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var bodyParser = require('body-parser');
-var User = require('../../models/User');
-var oauth = require('oauth');
-var bearerToken = require('../../config.js').bearerToken;
-
+const express = require('express');
+const axios = require('axios');
+const router = express.Router();
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const bodyParser = require('body-parser');
+const User = require('../../models/User');
+const oauth = require('oauth');
+const bearerToken = require('../../config.js').bearerToken;
+const { createUser, euclideanDistance } = require('./userHelpers.js')
 // Get the twitter consumer key and secret
 var twitterConsumerKey = "nM9Ti3fALEAFUsZaqKpkFGmoG";
 var twitterConsumerSecret = "ecEiAeVVbmJwGFkeiek1SprGcRswaNkKaswuTfSOo4zQ1JjiXY";
@@ -32,32 +32,40 @@ router.use(function (req, res, next) {
 
 router.get('/', function (req, res) {
   var user = req.query.user;
-  console.log(user);
   res.render('index', {user: user});
 });
 
+
+// Gets the user's tweets, personality, matches and saves them to the db
 router.route('/fetchUser')
 .post(function(req,res) {
+  // Holds our user object
   let myUser = [];
+  // Creates a Promise to search the db for a cached version of the user
   const user = new Promise(function(resolve, reject) {
     User.findOne({ name: req.body.name }, function (err, response) {
       if (err) {
         reject(err);
       // If there's no data in the database create a user
       } else if (response == null) {
+        // calls createUser helper function which returns a promise
         let userPromise = createUser(req.body.name);
         userPromise.then((newUser) => {
           resolve(newUser);
         })
         .catch((error) => res.status(500).json({ error: error }));
+        // If we find a user pass it on
       } else {
         resolve(response);
       }
     });
   });
+  // getting user's friends/folowers usernames in a promise
   const usernamesPromise = new Promise(function(resolve, reject) {
     user.then(user => {
+      // uses the user promise to store our user
       myUser = user;
+      // calls to get twitter followers and following
       axios.all([
         axios.get('https://api.twitter.com/1.1/followers/list.json', {
           params: {
@@ -78,6 +86,7 @@ router.route('/fetchUser')
           }
         })
       ])
+      // takes both api responses, gets and combines the usernames, and resolves the list
       .then(axios.spread((followers,friends) => {
         const friendsUserNames = friends.data.users.map((user) => user.screen_name);
         const followersUserNames = followers.data.users.map((user) => user.screen_name);
@@ -89,17 +98,21 @@ router.route('/fetchUser')
       });
     });
   });
+  // From the username promise we create users for each username
   usernamesPromise.then(usernames => {
+    // Calling createUser on each username
     Promise.all(usernames.map((username) => createUser(username)))
     .then(users => {
+      // saving each user
       users.map(user => user.save());
       return users;
     })
+    // after creating and saving a users followers/following we get the closest matches
     .then(responses => euclideanDistance(myUser.personality, responses))
     .then(matches => {
       myUser.matches = matches;
+      //We save the user and send a reply
       myUser.save();
-      console.log(myUser);
       res.send(myUser);
     });
   });
@@ -156,116 +169,5 @@ router.get('/home', function (req, res) {
   });
 });
 
-const euclideanDistance = (userPersonality, otherUsers) => {
-  let matches = [];
-  otherUsers.forEach(otherUser => {
-    let sum = 0;
-    for(var i = 0; i < 5; i += 1) {
-      sum += userPersonality[i].raw_score - otherUser.personality[i].raw_score;
-    }
-    const result = Math.sqrt(Math.abs(sum));
-    const userObject = {
-      'username': otherUser.name,
-      'personality': otherUser.personality,
-      'similarity': result,
-    };
-    if (matches.length < 5) {
-      matches.push(userObject)
-    } else {
-      for(var i = 0; i < 5; i += 1) {
-        if (result < matches[i].similarity) {
-          matches[i] = userObject;
-          return;
-        }
-      }
-    }
-  });
-  return matches;
-}
-
-
-const createUser = (username) =>
-  new Promise(function(resolve, reject) {
-    var user = new User();
-    user.name = username;
-    axios.get('https://api.twitter.com/1.1/statuses/user_timeline.json', {
-      params: {
-        "screen_name": username,
-        "count": 200,
-      },
-      headers: {
-        "Authorization": "Bearer " + bearerToken
-      }
-    })
-    .then(response => response.data)
-    .then(twitterData => formatTwitterResponse(twitterData))
-    .then(tweets => {
-      user.tweets = tweets;
-      return getProfile(tweets);
-    })
-    .then(personalityProfile => formatWatsonResponse(personalityProfile))
-    .then(personalityTraits => {
-      user.personality = personalityTraits;
-      return user;
-    })
-    .then(user => resolve(user))
-    .catch((error) => {
-      reject(error);
-    });
-  });
-
-const PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
-const personalityInsights = new PersonalityInsightsV3({
-  username: '34442ff0-5fd6-4772-ba9e-9e7a1fe3dad5',
-  password: 'heBS6eLUnyDQ',
-  version_date: '2017-10-13'
-});
-
-const getProfile = (tweets) =>
-  new Promise((resolve, reject) => {
-    var params = {
-      content: tweets,
-      content_type: 'application/json',
-      raw_scores: true
-    };
-
-    return personalityInsights.profile(params, (err, profile) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(profile);
-      }
-    });
-});
-
-function formatTwitterResponse(twitterResponse) {
-  var formattedTweets = {
-    "contentItems": [],
-  };
-  for (var i=0; i < twitterResponse.length; i++) {
-    var tweet = {
-      "content": twitterResponse[i].text,
-      "contenttype": "text/plain",
-      "id": twitterResponse[i].id_str,
-      "language": twitterResponse[i].lang
-    };
-    formattedTweets.contentItems.push(tweet);
-  }
-
-  return(formattedTweets);
-}
-
-function formatWatsonResponse(watsonResponse) {
-  var formattedPersonality = [];
-  for (var i=0; i < watsonResponse.personality.length; i++) {
-    var trait = {
-      "name": watsonResponse.personality[i].name,
-      "percentile": watsonResponse.personality[i].percentile,
-      "raw_score": watsonResponse.personality[i].raw_score,
-    };
-    formattedPersonality.push(trait);
-  }
-  return(formattedPersonality);
-}
 
 module.exports = router;
