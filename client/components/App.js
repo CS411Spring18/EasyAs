@@ -10,48 +10,14 @@ class App extends Component {
     super(props);
     this.state = {
       value: '',
-      personality: [],
+      tweets: [],
+      resultsShow: false,
+      personality: [],  //
+      twitterName: "jacobkozol", // temp twitter name
+      done: false,
       matches: [],
       username: '',
-      resultsShow: false,
-      chartData: {labels: ["Openness", "Neuroticsm", "Extroversion", "Conscienciousness", "Agreeableness"],
-                  datasets: [
-                    {
-                      label: "Percentile",
-                      backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-                      data: [80,50,64,81,80]
-                    }
-                  ]
-      },
-      chartOptions: {scales: {
-                      yAxes: [{
-                        barPercentage: 0.5,
-                        gridLines: {
-                          display: false
-                        }
-                      }],
-                        xAxes: [{
-                        gridLines: {
-                          zeroLineColor: "black",
-                          zeroLineWidth: 2
-                        },
-                        ticks: {
-                          min: 0,
-                          max: 100,
-                          stepSize: 10
-                        },
-                        scaleLabel: {
-                          display: true,
-                          labelString: "Percentile"
-                        }
-                      }]
-                    },
-                    elements: {
-                      rectangle: {
-                        borderSkipped: 'left',
-                      }
-                    }
-                  },
+
     };
   }
 
@@ -60,7 +26,8 @@ class App extends Component {
   componentWillMount() {
     axios.post('/fetchUser',
       querystring.stringify({
-        name: 'jacobkozol',
+        name: this.state.twitterName,
+
       }), {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -71,6 +38,7 @@ class App extends Component {
           personality: response.data.personality,
           matches: response.data.matches,
           resultsShow: true,
+          done: true,
         });
       });
   }
@@ -91,8 +59,8 @@ class App extends Component {
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
 
-          <BarChart data={this.state.chartData} options={this.state.chartOptions} width="600" height="250" style={{}}/>
-
+          {<Chart openness={this.state.personality[0].percentile} conscientiousness={this.state.personality[1].percentile} ext={this.state.personality[2].percentile} agree={this.state.personality[3].percentile} emo={this.state.personality[4].percentile}/> }
+          <button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleSubmit.bind(this)}>Find Your Top 5 Matches</button>
           <hr/>
 
           {this.state.resultsShow ? <Results /> : null}
@@ -174,6 +142,87 @@ const Results = () => (
     <p className="lead">Here are your most similar followers:</p>
     <BarChart data={data.chartData} options={data.chartOptions} width="600" height="250" style={{}}/>
   </div>
-)
+);
+
+
+
+
+class Chart extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: '',
+      tweets: [],
+      resultsShow: false,
+      personality: [props.openness*100,props.conscientiousness*100, props.ext*100, props.agree*100,props.emo*100],  //
+      twitterName: "rhonda_mak", // temp twitter name
+    };
+  }
+  render() {
+
+    var chartInfo = {
+      chartData: {labels: ["Openness", "Conscientiousness", "Extroversion", "Agreeableness", "Emotional Range"],
+        datasets: [
+          {
+            label: "Percentile",
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+            data: this.state.personality
+          }
+        ]
+      },
+      chartOptions: {scales: {
+        yAxes: [{
+          barPercentage: 0.5,
+          gridLines: {
+            display: false
+          }
+        }],
+        xAxes: [{
+          gridLines: {
+            zeroLineColor: "black",
+            zeroLineWidth: 2
+          },
+          ticks: {
+            min: 0,
+            max: 100,
+            stepSize: 10
+          },
+          scaleLabel: {
+            display: true,
+            labelString: "Percentile"
+          }
+        }]
+      },
+        elements: {
+          rectangle: {
+            borderSkipped: 'left',
+          }
+        }
+      }
+    }
+
+
+
+    return (
+      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250" style={{}}/>
+    )
+  }
+}
+
+
+// const Chart = () => (
+//   constructor(props) {
+//   super(props);
+//   this.state = {
+//     value: '',
+//     tweets: [],
+//     resultsShow: false,
+//     personality: [],  //
+//     twitterName: "rhonda_mak", // temp twitter name
+//   };
+//
+//   <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250" style={{}}/>
+// )
+
 
 export default App;
