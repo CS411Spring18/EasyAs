@@ -11,7 +11,9 @@ class App extends Component {
       value: '',
       tweets: [],
       resultsShow: false,
-      personality: [],
+      personality: [],  //
+      twitterName: "rhonda_mak", // temp twitter name
+      done: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -29,7 +31,7 @@ class App extends Component {
 
     axios.post('/fetchUser',
       querystring.stringify({
-        name: this.state.value,
+        name: this.state.twitterName,
       }), {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -37,16 +39,10 @@ class App extends Component {
       }).then((response) => {
         this.setState({
           personality: response.data,
+          done: true
         });
       });
     event.preventDefault();
-  }
-  handleResults() {
-    // This is going to be where we call the backend
-
-    this.setState({
-      resultsShow: !this.state.resultsShow,
-    });
   }
 
   render() {
@@ -64,8 +60,8 @@ class App extends Component {
             <h1>Welcome, _ . </h1>
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
-          <Chart />
-          <button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleResults.bind(this)}>Find Your Top 5 Matches</button>
+          {this.state.done ? <Chart openness={this.state.personality[0].percentile} conscientiousness={this.state.personality[1].percentile} ext={this.state.personality[2].percentile} agree={this.state.personality[3].percentile} emo={this.state.personality[4].percentile}/> : null}
+          <button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleSubmit.bind(this)}>Find Your Top 5 Matches</button>
 
           <hr/>
 
@@ -149,49 +145,84 @@ const Results = () => (
   </div>
 );
 
-var chartInfo = {
-  chartData: {labels: ["Openness", "Neuroticsm", "Extroversion", "Conscienciousness", "Agreeableness"],
-    datasets: [
-      {
-        label: "Percentile",
-        backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-        data: [80,50,64,81,80]
-      }
-    ]
-  },
-  chartOptions: {scales: {
-    yAxes: [{
-      barPercentage: 0.5,
-      gridLines: {
-        display: false
-      }
-    }],
-    xAxes: [{
-      gridLines: {
-        zeroLineColor: "black",
-        zeroLineWidth: 2
+
+
+
+class Chart extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: '',
+      tweets: [],
+      resultsShow: false,
+      personality: [props.openness*100,props.conscientiousness*100, props.ext*100, props.agree*100,props.emo*100],  //
+      twitterName: "rhonda_mak", // temp twitter name
+    };
+  }
+  render() {
+
+    var chartInfo = {
+      chartData: {labels: ["Openness", "Conscientiousness", "Extroversion", "Agreeableness", "Emotional Range"],
+        datasets: [
+          {
+            label: "Percentile",
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+            data: this.state.personality
+          }
+        ]
       },
-      ticks: {
-        min: 0,
-        max: 100,
-        stepSize: 10
+      chartOptions: {scales: {
+        yAxes: [{
+          barPercentage: 0.5,
+          gridLines: {
+            display: false
+          }
+        }],
+        xAxes: [{
+          gridLines: {
+            zeroLineColor: "black",
+            zeroLineWidth: 2
+          },
+          ticks: {
+            min: 0,
+            max: 100,
+            stepSize: 10
+          },
+          scaleLabel: {
+            display: true,
+            labelString: "Percentile"
+          }
+        }]
       },
-      scaleLabel: {
-        display: true,
-        labelString: "Percentile"
-      }
-    }]
-  },
-    elements: {
-      rectangle: {
-        borderSkipped: 'left',
+        elements: {
+          rectangle: {
+            borderSkipped: 'left',
+          }
+        }
       }
     }
+
+
+
+    return (
+      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250" style={{}}/>
+    )
   }
 }
 
-const Chart = () => (
-  <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250" style={{}}/>
-)
+
+// const Chart = () => (
+//   constructor(props) {
+//   super(props);
+//   this.state = {
+//     value: '',
+//     tweets: [],
+//     resultsShow: false,
+//     personality: [],  //
+//     twitterName: "rhonda_mak", // temp twitter name
+//   };
+//
+//   <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250" style={{}}/>
+// )
 
 export default App;
