@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import '../css/App.css';
 import axios from 'axios';
 var querystring = require('querystring');
+var BarChart = require("react-chartjs").Bar;
 
 class App extends Component {
   constructor(props) {
@@ -9,6 +10,7 @@ class App extends Component {
     this.state = {
       value: '',
       tweets: [],
+      resultsShow: false,
       personality: [],
     };
 
@@ -21,6 +23,10 @@ class App extends Component {
   }
 
   handleSubmit(event) {
+    this.setState({
+      resultsShow: true,
+    });
+
     axios.post('/fetchUser',
       querystring.stringify({
         name: this.state.value,
@@ -34,6 +40,13 @@ class App extends Component {
         });
       });
     event.preventDefault();
+  }
+  handleResults() {
+    // This is going to be where we call the backend
+
+    this.setState({
+      resultsShow: !this.state.resultsShow,
+    });
   }
 
   render() {
@@ -51,35 +64,134 @@ class App extends Component {
             <h1>Welcome, _ . </h1>
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
-          <button className="btn btn-lg btn-primary btn-block" type="submit">Find Your Top 5 Matches</button>
+          <Chart />
+          <button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleResults.bind(this)}>Find Your Top 5 Matches</button>
+
+          <hr/>
+
+          {this.state.resultsShow ? <Results /> : null}
 
 
 
-          <div className="jumbotron">
-            <h1>Twitter Username:</h1>
-            <form className="form-inline" onSubmit={this.handleSubmit}>
-              <input className="form-control" aria-label="Username" onChange={this.handleChange}></input>
-              <button className="btn btn-lg btn-primary" display="inline">Search</button>
-            </form>
-          </div>
-          <div className="jumbotron">
-            <h1>Results:</h1>
-            <div className="table-responsive">
-              <table className="table">
-                <tbody>
-                  {this.state.tweets.map((tweet, i) =>
-                    <tr key={i}>
-                      <td>{tweet}</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+
+          {/*<div className="jumbotron">*/}
+            {/*<h1>Twitter Username:</h1>*/}
+            {/*<form className="form-inline" onSubmit={this.handleSubmit}>*/}
+              {/*<input className="form-control" aria-label="Username" onChange={this.handleChange}></input>*/}
+              {/*<button className="btn btn-lg btn-primary" display="inline">Search</button>*/}
+            {/*</form>*/}
+          {/*</div>*/}
+          {/*<div className="jumbotron">*/}
+            {/*<h1>Results:</h1>*/}
+            {/*<div className="table-responsive">*/}
+              {/*<table className="table">*/}
+                {/*<tbody>*/}
+                  {/*{this.state.tweets.map((tweet, i) =>*/}
+                    {/*<tr key={i}>*/}
+                      {/*<td>{tweet}</td>*/}
+                    {/*</tr>*/}
+                  {/*)}*/}
+                {/*</tbody>*/}
+              {/*</table>*/}
+            {/*</div>*/}
+          {/*</div>*/}
         </main>
       </div>
     );
   }
 }
+
+const data = {
+  chartData: {labels: ["Openness", "Neuroticsm", "Extroversion", "Conscienciousness", "Agreeableness"],
+    datasets: [
+      {
+        label: "Percentile",
+        backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+        data: [80,50,64,81,80]
+      }
+    ]
+  },
+  chartOptions: {scales: {
+    yAxes: [{
+      barPercentage: 0.5,
+      gridLines: {
+        display: false
+      }
+    }],
+    xAxes: [{
+      gridLines: {
+        zeroLineColor: "black",
+        zeroLineWidth: 2
+      },
+      ticks: {
+        min: 0,
+        max: 100,
+        stepSize: 10
+      },
+      scaleLabel: {
+        display: true,
+        labelString: "Percentile"
+      }
+    }]
+  },
+    elements: {
+      rectangle: {
+        borderSkipped: 'left',
+      }
+    }
+  }
+};
+const Results = () => (
+  <div id="results">
+    <h1 >Results</h1>
+    <p className="lead">Here are your most similar followers:</p>
+    <BarChart data={data.chartData} options={data.chartOptions} width="600" height="250" style={{}}/>
+  </div>
+);
+
+var chartInfo = {
+  chartData: {labels: ["Openness", "Neuroticsm", "Extroversion", "Conscienciousness", "Agreeableness"],
+    datasets: [
+      {
+        label: "Percentile",
+        backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+        data: [80,50,64,81,80]
+      }
+    ]
+  },
+  chartOptions: {scales: {
+    yAxes: [{
+      barPercentage: 0.5,
+      gridLines: {
+        display: false
+      }
+    }],
+    xAxes: [{
+      gridLines: {
+        zeroLineColor: "black",
+        zeroLineWidth: 2
+      },
+      ticks: {
+        min: 0,
+        max: 100,
+        stepSize: 10
+      },
+      scaleLabel: {
+        display: true,
+        labelString: "Percentile"
+      }
+    }]
+  },
+    elements: {
+      rectangle: {
+        borderSkipped: 'left',
+      }
+    }
+  }
+}
+
+const Chart = () => (
+  <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250" style={{}}/>
+)
 
 export default App;
