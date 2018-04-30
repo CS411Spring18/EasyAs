@@ -3,6 +3,7 @@ import '../css/App.css';
 import axios from 'axios';
 var querystring = require('querystring');
 var BarChart = require("react-chartjs").Bar;
+var Modal = require('react-bootstrap').Modal;
 
 class App extends Component {
   constructor(props) {
@@ -12,37 +13,34 @@ class App extends Component {
       tweets: [],
       resultsShow: false,
       personality: [],  //
-      twitterName: "rhonda_mak", // temp twitter name
+      twitterName: "jacobkozol", // temp twitter name
       done: false,
+      matches: [],
+      username: '',
+
     };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChange(event) {
-    this.setState({value: event.target.value});
-  }
 
-  handleSubmit(event) {
-    this.setState({
-      resultsShow: true,
-    });
 
+  componentWillMount() {
     axios.post('/fetchUser',
       querystring.stringify({
         name: this.state.twitterName,
+
       }), {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       }).then((response) => {
         this.setState({
-          personality: response.data,
-          done: true
+          username: response.data.name,
+          personality: response.data.personality,
+          matches: response.data.matches,
+          resultsShow: true,
+          done: true,
         });
       });
-    event.preventDefault();
   }
 
   render() {
@@ -60,9 +58,9 @@ class App extends Component {
             <h1>Welcome, _ . </h1>
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
-          {this.state.done ? <Chart openness={this.state.personality[0].percentile} conscientiousness={this.state.personality[1].percentile} ext={this.state.personality[2].percentile} agree={this.state.personality[3].percentile} emo={this.state.personality[4].percentile}/> : null}
-          <button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleSubmit.bind(this)}>Find Your Top 5 Matches</button>
 
+          {<Chart openness={this.state.personality[0].percentile} conscientiousness={this.state.personality[1].percentile} ext={this.state.personality[2].percentile} agree={this.state.personality[3].percentile} emo={this.state.personality[4].percentile}/> }
+          <button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleSubmit.bind(this)}>Find Your Top 5 Matches</button>
           <hr/>
 
           {this.state.resultsShow ? <Results /> : null}
@@ -137,6 +135,7 @@ const data = {
     }
   }
 };
+
 const Results = () => (
   <div id="results">
     <h1 >Results</h1>
@@ -224,5 +223,6 @@ class Chart extends Component {
 //
 //   <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250" style={{}}/>
 // )
+
 
 export default App;
