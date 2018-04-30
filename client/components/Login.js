@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../css/App.css';
-// import axios from 'axios';
-import { withRouter } from "react-router-dom";
+import axios from 'axios';
+import { withRouter, Redirect } from "react-router-dom";
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -11,15 +11,20 @@ class Login extends Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   handleChange(event) {
     this.setState({value: event.target.value});
   }
   
-  handleSubmit(event) {
-  }
+  handleClick(event) {
+    axios.get('/home')
+      .then(function (response) {
+        const url = "https://twitter.com/oauth/authorize?oauth_token=" + response.data;
+        window.location = url;
+      });
+  };
 
   render() {
     return (
@@ -30,34 +35,9 @@ class Login extends Component {
             <form className="form-signin">
               <h1 className="h3 mb-3 font-weight-normal">Please Sign In</h1>
 
-              <button className="btn btn-lg btn-primary btn-block" type="submit" onSubmit={() => this.props.history.push('/sessions/connect')}>Twitter Login</button>
+              <button className="btn btn-lg btn-primary btn-block" type="button" onClick={this.handleClick}>Twitter Login</button>
             </form>
           </div>
-
-
-
-
-          {/*<div className="jumbotron">*/}
-            {/*<h1>Twitter Username:</h1>*/}
-            {/*<form className="form-inline" onSubmit={this.handleSubmit}>*/}
-              {/*<input className="form-control" aria-label="Username" onChange={this.handleChange}></input>*/}
-              {/*<button className="btn btn-lg btn-primary" display="inline">Search</button>*/}
-            {/*</form>*/}
-          {/*</div>*/}
-          {/*<div className="jumbotron">*/}
-            {/*<h1>Results:</h1>*/}
-            {/*<div className="table-responsive">*/}
-              {/*<table className="table">*/}
-                {/*<tbody>*/}
-                {/*{this.state.tweets.map((tweet, i) =>*/}
-                  {/*<tr key={i}>*/}
-                    {/*<td>{tweet}</td>*/}
-                  {/*</tr>*/}
-                {/*)}*/}
-                {/*</tbody>*/}
-              {/*</table>*/}
-            {/*</div>*/}
-          {/*</div>*/}
         </main>
       </div>
     );

@@ -8,13 +8,13 @@ var twitterConfig = require("../../config.js");
 var app = express();
 
 // Get the twitter consumer key and secret
-var twitterConsumerKey = twitterConfig.consumer_key;
-var twitterConsumerSecret = twitterConfig.consumer_secret;
+var twitterConsumerKey = "nM9Ti3fALEAFUsZaqKpkFGmoG";
+var twitterConsumerSecret = "ecEiAeVVbmJwGFkeiek1SprGcRswaNkKaswuTfSOo4zQ1JjiXY";
 
 // Create the OAuth
 var consumer = new oauth.OAuth(
   "https://twitter.com/oauth/request_token", "https://twitter.com/oauth/access_token",
-  twitterConsumerKey, twitterConsumerSecret, "1.0A", "http://localhost:3000/sessions/callback", "HMAC-SHA1");
+  twitterConsumerKey, twitterConsumerSecret, "1.0A", 'http://127.0.0.1:3000/sessions/callback', "HMAC-SHA1");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -32,7 +32,7 @@ app.use(function (req, res, next) {
 app.get('/sessions/connect', function (req, res) {
   consumer.getOAuthRequestToken(function (error, oauthToken, oauthTokenSecret, results) {
     if (error) {
-      res.send("Error getting OAuth request token : " + inspect(error), 500);
+      res.send("Error getting OAuth request token : " + error, 500);
     } else {
       req.session.oauthRequestToken = oauthToken;
       req.session.oauthRequestTokenSecret = oauthTokenSecret;
@@ -67,4 +67,4 @@ app.get('/home', function (req, res) {
     }
   });
 });
-module.exports = app;
+
