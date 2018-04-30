@@ -126,7 +126,7 @@ router.get('/sessions/callback', function (req, res) {
       req.session.oauthAccessToken = oauthAccessToken;
       req.session.oauthAccessTokenSecret = oauthAccessTokenSecret;
 
-      res.redirect('/');
+      res.redirect('/results');
     }
   });
 });

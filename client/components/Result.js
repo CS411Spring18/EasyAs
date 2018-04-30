@@ -5,7 +5,7 @@ var querystring = require('querystring');
 var BarChart = require("react-chartjs").Bar;
 var Modal = require('react-bootstrap').Modal;
 
-class App extends Component {
+class Result extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -90,9 +90,6 @@ class App extends Component {
             <h1>Welcome, _ . </h1>
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
-
-          <BarChart data={this.state.chartData} options={this.state.chartOptions} width="600" height="250" style={{}}/>
-
           <hr/>
 
           {this.state.resultsShow ? <Results /> : null}
@@ -176,4 +173,4 @@ const Results = () => (
   </div>
 )
 
-export default App;
+export default Result;
