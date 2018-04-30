@@ -11,6 +11,7 @@ class App extends Component {
       value: '',
       tweets: [],
       resultsShow: false,
+      personality: [],
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -34,9 +35,8 @@ class App extends Component {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       }).then((response) => {
-        const tweets = response.data.map((tweet) => tweet.text);
         this.setState({
-          tweets: tweets,
+          personality: response.data,
         });
       });
     event.preventDefault();
@@ -50,6 +50,7 @@ class App extends Component {
   }
 
   render() {
+    console.log(this.state);
     return (
       <div>
         <div>
@@ -63,7 +64,6 @@ class App extends Component {
             <h1>Welcome, _ . </h1>
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
-
           <Chart />
           <button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleResults.bind(this)}>Find Your Top 5 Matches</button>
 
