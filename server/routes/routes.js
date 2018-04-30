@@ -63,111 +63,16 @@ router.route('/fetchUser')
       });
     });
   });
-  const usersPromise = new Promise(function(resolve, reject) {
-    usernamesPromise.then(usernames => {
-      console.log(usernames);
-      const users = usernames.map(username => {
-        let userPromise = createUser(username);
-        let thisUser = userPromise.then((newUser) => {
-          newUser.save();
-          return(user);
-        })
-        .then(user => console.log(user.personality));
-        // .catch((error) => res.status(500).json({ error: error }));
-      });
-      resolve(users);
-    });
+
+  usernamesPromise.then(usernames => {
+    Promise.all(usernames.map((username) => createUser(username)))
+    .then(users => {
+      users.map(user => user.save());
+      return users;
+    })
+    .then(responses => responses.map(response => response.personality))
+    .then(personalities => console.log(personalities));
   });
-  usersPromise.then(data => console.log(data))
-
-  // console.log(usernames);
-  // console.log(usernames);
-      // console.log(usernames);
-      // const usersPromises = usernames.forEach((username) => new Promise(function(resolve, reject) {
-      //   let userPromise = createUser(username)
-      //   userPromise.then((newUser) => {
-      //     newUser.save();
-      //     resolve(newUser);
-      //   });
-      // }));
-      // console.log(usersPromises);
-      // usersPromises[0].next(data => console.log(data));
-
-      // const usersPromise = new Promise.all(usernames.map((username) => {
-      //     let userPromise = createUser(username)
-      //     userPromise.then((newUser) => {
-      //       newUser.save();
-      //       resolve(newUser);
-      //     });
-
-      // const usersPromise = new Promise(function(resolve, reject) {
-      //   resolve(usernames.map((username) => {
-      //     let userPromise = createUser(username)
-      //     userPromise.then((newUser) => {
-      //       newUser.save();
-      //       return(newUser);
-      //     });
-      //     // .then(user => console.log(user));
-      //   }));
-      //   // resolve(userData);
-      // });
-      // usersPromise.then(users => console.log(users));
-    // });
-    // .then(response => console.log(response));
-
-    // });
-  // });
-
-    // .then(usernames => resolve(usernames.map(username => createUser(username)))
-  //   .then(usernames => resolve(usernames))
-  //   .catch((error) => {
-  //     res.status(500).json({ error: error });
-  //     reject(error);
-  //   });
-  // });
-  // usernames.then(item => console.log(item));
-
-  //   .then(() => {
-  //     return new Promise(function(resolve, reject) {
-  //       axios.all([
-  //         axios.get('https://api.twitter.com/1.1/followers/list.json', {
-  //           params: {
-  //             "screen_name": user.name,
-  //             "count": 200,
-  //           },
-  //           headers: {
-  //             "Authorization": "Bearer " + bearerToken
-  //           }
-  //         }),
-  //         axios.get('https://api.twitter.com/1.1/friends/list.json', {
-  //           params: {
-  //             "screen_name": user.name,
-  //             "count": 200,
-  //           },
-  //           headers: {
-  //             "Authorization": "Bearer " + bearerToken
-  //           }
-  //         })
-  //       ])
-  //       .then(axios.spread((followers,friends) => {
-  //         const friendsUserNames = friends.data.users.map((user) => user.screen_name);
-  //         const followersUserNames = followers.data.users.map((user) => user.screen_name);
-  //         resolve(friendsUserNames.concat(followersUserNames));
-  //       }))
-  //       .catch((error) => {
-  //         res.status(500).json({ error: error });
-  //         reject(error);
-  //       });
-  //     });
-  //   })
-  //   // .then(usernames => resolve(usernames.map(username => createUser(username)))
-  //   .then(usernames => resolve(usernames))
-  //   .catch((error) => {
-  //     res.status(500).json({ error: error });
-  //     reject(error);
-  //   });
-  // });
-  // usernames.then(item => console.log(item));
 });
 
 const createUser = (username) =>
