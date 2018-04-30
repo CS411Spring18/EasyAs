@@ -40,6 +40,7 @@ class App extends Component {
           resultsShow: true,
           done: true,
         });
+        console.log(this.state);
       });
   }
 
@@ -59,8 +60,8 @@ class App extends Component {
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
 
-          {<Chart openness={this.state.personality[0].percentile} conscientiousness={this.state.personality[1].percentile} ext={this.state.personality[2].percentile} agree={this.state.personality[3].percentile} emo={this.state.personality[4].percentile}/> }
-          <button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleSubmit.bind(this)}>Find Your Top 5 Matches</button>
+          {this.state.done ? <Chart openness={this.state.personality[0].percentile} conscientiousness={this.state.personality[1].percentile} ext={this.state.personality[2].percentile} agree={this.state.personality[3].percentile} emo={this.state.personality[4].percentile}/> : null}
+          {/*<button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleSubmit.bind(this)}>Find Your Top 5 Matches</button>*/}
           <hr/>
 
           {this.state.resultsShow ? <Results /> : null}
