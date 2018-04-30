@@ -9,6 +9,7 @@ class App extends Component {
     this.state = {
       value: '',
       tweets: [],
+      personality: [],
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -28,18 +29,32 @@ class App extends Component {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       }).then((response) => {
-        const tweets = response.data.map((tweet) => tweet.text);
         this.setState({
-          tweets: tweets,
+          personality: response.data,
         });
       });
     event.preventDefault();
   }
 
   render() {
+    console.log(this.state);
     return (
       <div>
-        <main role="main" className="container">
+        <div>
+          <nav className="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+            <a className="navbar-brand" href="#">Little Birdie</a>
+          </nav>
+        </div>
+
+        <main role="main" className="container" style={{paddingTop:75}}>
+          <div className="starter-template text-center">
+            <h1>Welcome, _ . </h1>
+            <p className="lead">Here are the results of your personality analysis :</p>
+          </div>
+          <button className="btn btn-lg btn-primary btn-block" type="submit">Find Your Top 5 Matches</button>
+
+
+
           <div className="jumbotron">
             <h1>Twitter Username:</h1>
             <form className="form-inline" onSubmit={this.handleSubmit}>
