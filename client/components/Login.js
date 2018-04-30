@@ -29,13 +29,19 @@ class Login extends Component {
   render() {
     return (
       <div>
+        <div>
+          <nav className="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+            <a className="navbar-brand" href="#">Little Birdie</a>
+          </nav>
+        </div>
+        
         <main role="main" className="container">
-
-          <div className="text-center" style={{paddingTop: 20}}>
+          
+          <div className="text-center" style={{paddingTop: 80}}>
             <form className="form-signin">
-              <h1 className="h3 mb-3 font-weight-normal">Please Sign In</h1>
+              <h1 className="h2 mb-3 font-weight-normal">Welcome to Little Birdie</h1>
 
-              <button className="btn btn-lg btn-primary btn-block" type="button" onClick={this.handleClick}>Twitter Login</button>
+              <button className="btn btn-lg btn-primary" type="button" onClick={this.handleClick}>Twitter Login</button>
             </form>
           </div>
         </main>
