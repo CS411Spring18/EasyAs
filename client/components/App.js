@@ -21,8 +21,6 @@ class App extends Component {
     };
   }
 
-
-
   componentWillMount() {
     axios.post('/fetchUser',
       querystring.stringify({
@@ -56,7 +54,7 @@ class App extends Component {
 
         <main role="main" className="container" style={{paddingTop:75}}>
           <div className="starter-template text-center">
-            <h1>Welcome, _ . </h1>
+            <h1>Welcome, Jacob. </h1>
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
 
@@ -64,89 +62,12 @@ class App extends Component {
           {/*<button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleSubmit.bind(this)}>Find Your Top 5 Matches</button>*/}
           <hr/>
 
-          {this.state.resultsShow ? <Results /> : null}
-
-
-
-
-          {/*<div className="jumbotron">*/}
-            {/*<h1>Twitter Username:</h1>*/}
-            {/*<form className="form-inline" onSubmit={this.handleSubmit}>*/}
-              {/*<input className="form-control" aria-label="Username" onChange={this.handleChange}></input>*/}
-              {/*<button className="btn btn-lg btn-primary" display="inline">Search</button>*/}
-            {/*</form>*/}
-          {/*</div>*/}
-          {/*<div className="jumbotron">*/}
-            {/*<h1>Results:</h1>*/}
-            {/*<div className="table-responsive">*/}
-              {/*<table className="table">*/}
-                {/*<tbody>*/}
-                  {/*{this.state.tweets.map((tweet, i) =>*/}
-                    {/*<tr key={i}>*/}
-                      {/*<td>{tweet}</td>*/}
-                    {/*</tr>*/}
-                  {/*)}*/}
-                {/*</tbody>*/}
-              {/*</table>*/}
-            {/*</div>*/}
-          {/*</div>*/}
+          {this.state.done ? <Results data={this.state.matches} /> : null}
         </main>
       </div>
     );
   }
 }
-
-const data = {
-  chartData: {labels: ["Openness", "Neuroticsm", "Extroversion", "Conscienciousness", "Agreeableness"],
-    datasets: [
-      {
-        label: "Percentile",
-        backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-        data: [80,50,64,81,80]
-      }
-    ]
-  },
-  chartOptions: {scales: {
-    yAxes: [{
-      barPercentage: 0.5,
-      gridLines: {
-        display: false
-      }
-    }],
-    xAxes: [{
-      gridLines: {
-        zeroLineColor: "black",
-        zeroLineWidth: 2
-      },
-      ticks: {
-        min: 0,
-        max: 100,
-        stepSize: 10
-      },
-      scaleLabel: {
-        display: true,
-        labelString: "Percentile"
-      }
-    }]
-  },
-    elements: {
-      rectangle: {
-        borderSkipped: 'left',
-      }
-    }
-  }
-};
-
-const Results = () => (
-  <div id="results">
-    <h1 >Results</h1>
-    <p className="lead">Here are your most similar followers:</p>
-    <BarChart data={data.chartData} options={data.chartOptions} width="600" height="250" style={{}}/>
-  </div>
-);
-
-
-
 
 class Chart extends Component {
   constructor(props) {
@@ -156,7 +77,6 @@ class Chart extends Component {
       tweets: [],
       resultsShow: false,
       personality: [props.openness*100,props.conscientiousness*100, props.ext*100, props.agree*100,props.emo*100],  //
-      twitterName: "rhonda_mak", // temp twitter name
     };
   }
   render() {
@@ -200,30 +120,78 @@ class Chart extends Component {
           }
         }
       }
-    }
-
-
+    };
 
     return (
-      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250" style={{}}/>
+      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250"/>
     )
   }
 }
 
 
-// const Chart = () => (
-//   constructor(props) {
-//   super(props);
-//   this.state = {
-//     value: '',
-//     tweets: [],
-//     resultsShow: false,
-//     personality: [],  //
-//     twitterName: "rhonda_mak", // temp twitter name
-//   };
-//
-//   <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250" style={{}}/>
-// )
+class Results extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: '',
+      tweets: [],
+      resultsShow: false,
+      personality: [props.data[0].similarity*100, props.data[1].similarity*100, props.data[2].similarity*100, props.data[3].similarity*100, props.data[4].similarity*100],
+      names: [props.data[0].username, props.data[1].username, props.data[2].username, props.data[3].username, props.data[4].username],
+    };
+  }
+  render() {
+    console.log('hello');
+    console.log(this.props.data);
 
+    var chartInfo = {
+      chartData: {labels: this.state.names,
+        datasets: [
+          {
+            label: "Percentile",
+            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+            data: this.state.personality
+          }
+        ]
+      },
+      chartOptions: {scales: {
+        yAxes: [{
+          barPercentage: 0.5,
+          gridLines: {
+            display: false
+          }
+        }],
+        xAxes: [{
+          gridLines: {
+            zeroLineColor: "black",
+            zeroLineWidth: 2
+          },
+          ticks: {
+            min: 0,
+            max: 100,
+            stepSize: 10
+          },
+          scaleLabel: {
+            display: true,
+            labelString: "Percentile"
+          }
+        }]
+      },
+        elements: {
+          rectangle: {
+            borderSkipped: 'left',
+          }
+        }
+      }
+    };
+    return (
+    <div id="results">
+      <h1 >Results</h1>
+      <p className="lead">Here are your most similar followers:</p>
+      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250"/>
+    </div>
 
+    )
+  }
+}
 export default App;
