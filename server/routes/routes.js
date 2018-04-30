@@ -12,50 +12,26 @@ router.get('/', function(req, res){
 
 router.route('/fetchUser')
 .post(function(req,res) {
-  var user = new User();
-  user.name = req.body.name;
-  User.findOne({ name: req.body.name }, function (err, response) {
-    if (err) {
-      res.send(err);
-    // If there's no data in the database create a user
-    } else if (response == null) {
-      let userPromise = createUser(user.name)
-      userPromise.then((user) => {
-        user.save();
-        res.send(user);
-      })
-      .catch((error) => res.status(500).json({ error: error }));
-    //   axios.get('https://api.twitter.com/1.1/statuses/user_timeline.json', {
-    //     params: {
-    //       "screen_name": req.body.name,
-    //       "count": 200,
-    //     },
-    //     headers: {
-    //       "Authorization": "Bearer " + bearerToken
-    //     }
-    //   })
-    //   .then(response => response.data)
-    //   .then(twitterData => formatTwitterResponse(twitterData))
-    //   .then(tweets => {
-    //     user.tweets = tweets;
-    //     return getProfile(tweets)
-    //   })
-    //   .then(personalityProfile => formatWatsonResponse(personalityProfile))
-    //   .then(personalityTraits => {
-    //     user.personality = personalityTraits;
-    //     user.save();
-    //     res.send(user.personality);
-    //   })
-    //   .catch((error) => {
-    //     res.status(500).json({ error: error });
-    //   });
-    // // If data is found in cache, return it
-    } else {
-      res.send(response.personality);
-    }
-  })
-  .then(() => {
-    return new Promise(function(resolve, reject) {
+  const user = new Promise(function(resolve, reject) {
+    User.findOne({ name: req.body.name }, function (err, response) {
+      if (err) {
+        reject(err);
+      // If there's no data in the database create a user
+      } else if (response == null) {
+        let userPromise = createUser(req.body.name)
+        userPromise.then((newUser) => {
+          newUser.save();
+          resolve(newUser);
+        })
+        .catch((error) => res.status(500).json({ error: error }));
+      } else {
+        res.send(response.personality);
+        resolve(response);
+      }
+    });
+  });
+  const usernamesPromise = new Promise(function(resolve, reject) {
+    user.then(user => {
       axios.all([
         axios.get('https://api.twitter.com/1.1/followers/list.json', {
           params: {
@@ -86,11 +62,112 @@ router.route('/fetchUser')
         reject(error);
       });
     });
-  })
-  .then(usernames => usernames.map(username => createUser(username)))
-  .catch((error) => {
-    res.status(500).json({ error: error });
   });
+  const usersPromise = new Promise(function(resolve, reject) {
+    usernamesPromise.then(usernames => {
+      console.log(usernames);
+      const users = usernames.map(username => {
+        let userPromise = createUser(username);
+        let thisUser = userPromise.then((newUser) => {
+          newUser.save();
+          return(user);
+        })
+        .then(user => console.log(user.personality));
+        // .catch((error) => res.status(500).json({ error: error }));
+      });
+      resolve(users);
+    });
+  });
+  usersPromise.then(data => console.log(data))
+
+  // console.log(usernames);
+  // console.log(usernames);
+      // console.log(usernames);
+      // const usersPromises = usernames.forEach((username) => new Promise(function(resolve, reject) {
+      //   let userPromise = createUser(username)
+      //   userPromise.then((newUser) => {
+      //     newUser.save();
+      //     resolve(newUser);
+      //   });
+      // }));
+      // console.log(usersPromises);
+      // usersPromises[0].next(data => console.log(data));
+
+      // const usersPromise = new Promise.all(usernames.map((username) => {
+      //     let userPromise = createUser(username)
+      //     userPromise.then((newUser) => {
+      //       newUser.save();
+      //       resolve(newUser);
+      //     });
+
+      // const usersPromise = new Promise(function(resolve, reject) {
+      //   resolve(usernames.map((username) => {
+      //     let userPromise = createUser(username)
+      //     userPromise.then((newUser) => {
+      //       newUser.save();
+      //       return(newUser);
+      //     });
+      //     // .then(user => console.log(user));
+      //   }));
+      //   // resolve(userData);
+      // });
+      // usersPromise.then(users => console.log(users));
+    // });
+    // .then(response => console.log(response));
+
+    // });
+  // });
+
+    // .then(usernames => resolve(usernames.map(username => createUser(username)))
+  //   .then(usernames => resolve(usernames))
+  //   .catch((error) => {
+  //     res.status(500).json({ error: error });
+  //     reject(error);
+  //   });
+  // });
+  // usernames.then(item => console.log(item));
+
+  //   .then(() => {
+  //     return new Promise(function(resolve, reject) {
+  //       axios.all([
+  //         axios.get('https://api.twitter.com/1.1/followers/list.json', {
+  //           params: {
+  //             "screen_name": user.name,
+  //             "count": 200,
+  //           },
+  //           headers: {
+  //             "Authorization": "Bearer " + bearerToken
+  //           }
+  //         }),
+  //         axios.get('https://api.twitter.com/1.1/friends/list.json', {
+  //           params: {
+  //             "screen_name": user.name,
+  //             "count": 200,
+  //           },
+  //           headers: {
+  //             "Authorization": "Bearer " + bearerToken
+  //           }
+  //         })
+  //       ])
+  //       .then(axios.spread((followers,friends) => {
+  //         const friendsUserNames = friends.data.users.map((user) => user.screen_name);
+  //         const followersUserNames = followers.data.users.map((user) => user.screen_name);
+  //         resolve(friendsUserNames.concat(followersUserNames));
+  //       }))
+  //       .catch((error) => {
+  //         res.status(500).json({ error: error });
+  //         reject(error);
+  //       });
+  //     });
+  //   })
+  //   // .then(usernames => resolve(usernames.map(username => createUser(username)))
+  //   .then(usernames => resolve(usernames))
+  //   .catch((error) => {
+  //     res.status(500).json({ error: error });
+  //     reject(error);
+  //   });
+  // });
+  // usernames.then(item => console.log(item));
 });
 
 const createUser = (username) =>
