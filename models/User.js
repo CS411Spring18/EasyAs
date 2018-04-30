@@ -3,8 +3,9 @@ var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
   name: String,
-  tweets: Array,
   personality: Array,
+  matches: Array,
+  tweets: Array,
 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -9,9 +9,10 @@ class App extends Component {
     super(props);
     this.state = {
       value: '',
-      tweets: [],
-      resultsShow: false,
+      username: '',
       personality: [],
+      matches: [],
+      resultsShow: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -35,8 +36,11 @@ class App extends Component {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       }).then((response) => {
+        console.log(response);
         this.setState({
-          personality: response.data,
+          personality: response.data.personality,
+          matches: response.data.matches,
+          username: response.data.name,
         });
       });
     event.preventDefault();
