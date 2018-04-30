@@ -48,7 +48,7 @@ class App extends Component {
 
         <main role="main" className="container" style={{paddingTop:75}}>
           <div className="starter-template text-center">
-            <h1>Welcome, _ . </h1>
+            <h1>Welcome, {this.props.name} . </h1>
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
           <button className="btn btn-lg btn-primary btn-block" type="submit">Find Your Top 5 Matches</button>

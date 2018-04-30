@@ -30,8 +30,10 @@ router.use(function (req, res, next) {
   next();
 });
 
-router.get('/', function(req, res){
-  res.render('index');
+router.get('/', function (req, res) {
+  var user = req.query.user;
+  console.log(user);
+  res.render('index', {user: user});
 });
 
 router.route('/fetchUser')
@@ -42,7 +44,7 @@ router.route('/fetchUser')
         reject(err);
       // If there's no data in the database create a user
       } else if (response == null) {
-        let userPromise = createUser(req.body.name)
+        let userPromise = createUser(req.body.name);
         userPromise.then((newUser) => {
           newUser.save();
           resolve(newUser);
@@ -117,12 +119,22 @@ router.get('/sessions/connect', function (req, res) {
 router.get('/sessions/callback', function (req, res) {
   consumer.getOAuthAccessToken(req.session.oauthRequestToken, req.session.oauthRequestTokenSecret, req.query.oauth_verifier, function (error, oauthAccessToken, oauthAccessTokenSecret, results) {
     if (error) {
-      res.send("Error getting OAuth access token : " + error + "[" + oauthAccessToken + "]" + "[" + oauthAccessTokenSecret + "]" + "[" + result + "]", 500);
+      res.send("Error getting OAuth access token : " + error + "[" + oauthAccessToken + "]" + "[" + oauthAccessTokenSecret + "]" + "[" + results + "]", 500);
     } else {
       req.session.oauthAccessToken = oauthAccessToken;
       req.session.oauthAccessTokenSecret = oauthAccessTokenSecret;
+      var newUser = new User({
+        name: results.screen_name,
+      });
 
-      res.redirect('/');
+      newUser.save(function (err) {
+        if (err) {
+          console.log(err);
+        };
+        console.log("User saved");
+      });
+      var user = encodeURIComponent(results.screen_name);
+      res.redirect('/?user=' + user);
     }
   });
 });
@@ -157,7 +169,7 @@ const createUser = (username) =>
     .then(twitterData => formatTwitterResponse(twitterData))
     .then(tweets => {
       user.tweets = tweets;
-      return getProfile(tweets)
+      return getProfile(tweets);
     })
     .then(personalityProfile => formatWatsonResponse(personalityProfile))
     .then(personalityTraits => {
