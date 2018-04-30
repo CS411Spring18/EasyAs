@@ -36,6 +36,7 @@ router.get('/', function(req, res){
 
 router.route('/fetchUser')
 .post(function(req,res) {
+  let myUser = [];
   const user = new Promise(function(resolve, reject) {
     User.findOne({ name: req.body.name }, function (err, response) {
       if (err) {
@@ -44,18 +45,17 @@ router.route('/fetchUser')
       } else if (response == null) {
         let userPromise = createUser(req.body.name)
         userPromise.then((newUser) => {
-          newUser.save();
           resolve(newUser);
         })
         .catch((error) => res.status(500).json({ error: error }));
       } else {
-        res.send(response.personality);
         resolve(response);
       }
     });
   });
   const usernamesPromise = new Promise(function(resolve, reject) {
     user.then(user => {
+      myUser = user;
       axios.all([
         axios.get('https://api.twitter.com/1.1/followers/list.json', {
           params: {
@@ -87,15 +87,18 @@ router.route('/fetchUser')
       });
     });
   });
-
   usernamesPromise.then(usernames => {
     Promise.all(usernames.map((username) => createUser(username)))
     .then(users => {
       users.map(user => user.save());
       return users;
     })
-    .then(responses => responses.map(response => response.personality))
-    .then(personalities => console.log(personalities));
+    .then(responses => euclideanDistance(myUser.personality, responses))
+    .then(matches => {
+      myUser.matches = matches;
+      myUser.save();
+      res.send(myUser);
+    });
   });
   });
 
@@ -139,6 +142,34 @@ router.get('/home', function (req, res) {
     }
   });
 });
+
+const euclideanDistance = (userPersonality, otherUsers) => {
+  let matches = [];
+  otherUsers.forEach(otherUser => {
+    let sum = 0;
+    for(var i = 0; i < 5; i += 1) {
+      sum += userPersonality[i].raw_score - otherUser.personality[i].raw_score;
+    }
+    const result = Math.sqrt(Math.abs(sum));
+    const userObject = {
+      'username': otherUser.name,
+      'personality': otherUser.personality,
+      'similarity': result,
+    };
+    if (matches.length < 5) {
+      matches.push(userObject)
+    } else {
+      for(var i = 0; i < 5; i += 1) {
+        if (result < matches[i].similarity) {
+          matches[i] = userObject;
+          return;
+        }
+      }
+    }
+  });
+  return matches;
+}
+
 
 const createUser = (username) =>
   new Promise(function(resolve, reject) {
