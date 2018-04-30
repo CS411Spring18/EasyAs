@@ -1,6 +1,7 @@
 //server/server.js
 var express = require('express');
-var router = require('./routes/routes.js')
+var router = require('./routes/routes.js');
+var twitterOAuth = require('./routes/oauth.js');
 var path = require('path');
 var bodyParser = require('body-parser');
 var app = express();

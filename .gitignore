@@ -24,7 +24,7 @@ node_modules/
 
 # Optional eslint cache
 .eslintcache
-.eslintrc.json
+.eslintrc
 
 # Optional REPL history
 .node_repl_history
