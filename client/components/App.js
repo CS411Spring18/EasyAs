@@ -3,54 +3,76 @@ import '../css/App.css';
 import axios from 'axios';
 var querystring = require('querystring');
 var BarChart = require("react-chartjs").Bar;
+var Modal = require('react-bootstrap').Modal;
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       value: '',
-      username: '',
       personality: [],
       matches: [],
+      username: '',
       resultsShow: false,
+      chartData: {labels: ["Openness", "Neuroticsm", "Extroversion", "Conscienciousness", "Agreeableness"],
+                  datasets: [
+                    {
+                      label: "Percentile",
+                      backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+                      data: [80,50,64,81,80]
+                    }
+                  ]
+      },
+      chartOptions: {scales: {
+                      yAxes: [{
+                        barPercentage: 0.5,
+                        gridLines: {
+                          display: false
+                        }
+                      }],
+                        xAxes: [{
+                        gridLines: {
+                          zeroLineColor: "black",
+                          zeroLineWidth: 2
+                        },
+                        ticks: {
+                          min: 0,
+                          max: 100,
+                          stepSize: 10
+                        },
+                        scaleLabel: {
+                          display: true,
+                          labelString: "Percentile"
+                        }
+                      }]
+                    },
+                    elements: {
+                      rectangle: {
+                        borderSkipped: 'left',
+                      }
+                    }
+                  },
     };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChange(event) {
-    this.setState({value: event.target.value});
-  }
 
-  handleSubmit(event) {
-    this.setState({
-      resultsShow: true,
-    });
 
+  componentWillMount() {
     axios.post('/fetchUser',
       querystring.stringify({
-        name: this.state.value,
+        name: 'jacobkozol',
       }), {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       }).then((response) => {
-        console.log(response);
         this.setState({
+          username: response.data.name,
           personality: response.data.personality,
           matches: response.data.matches,
-          username: response.data.name,
+          resultsShow: true,
         });
       });
-    event.preventDefault();
-  }
-  handleResults() {
-    // This is going to be where we call the backend
-
-    this.setState({
-      resultsShow: !this.state.resultsShow,
-    });
   }
 
   render() {
@@ -68,8 +90,8 @@ class App extends Component {
             <h1>Welcome, _ . </h1>
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
-          <Chart />
-          <button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleResults.bind(this)}>Find Your Top 5 Matches</button>
+
+          <BarChart data={this.state.chartData} options={this.state.chartOptions} width="600" height="250" style={{}}/>
 
           <hr/>
 
@@ -145,57 +167,13 @@ const data = {
     }
   }
 };
+
 const Results = () => (
   <div id="results">
     <h1 >Results</h1>
     <p className="lead">Here are your most similar followers:</p>
     <BarChart data={data.chartData} options={data.chartOptions} width="600" height="250" style={{}}/>
   </div>
-);
-
-var chartInfo = {
-  chartData: {labels: ["Openness", "Neuroticsm", "Extroversion", "Conscienciousness", "Agreeableness"],
-    datasets: [
-      {
-        label: "Percentile",
-        backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
-        data: [80,50,64,81,80]
-      }
-    ]
-  },
-  chartOptions: {scales: {
-    yAxes: [{
-      barPercentage: 0.5,
-      gridLines: {
-        display: false
-      }
-    }],
-    xAxes: [{
-      gridLines: {
-        zeroLineColor: "black",
-        zeroLineWidth: 2
-      },
-      ticks: {
-        min: 0,
-        max: 100,
-        stepSize: 10
-      },
-      scaleLabel: {
-        display: true,
-        labelString: "Percentile"
-      }
-    }]
-  },
-    elements: {
-      rectangle: {
-        borderSkipped: 'left',
-      }
-    }
-  }
-}
-
-const Chart = () => (
-  <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250" style={{}}/>
 )
 
 export default App;
