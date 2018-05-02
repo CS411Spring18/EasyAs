@@ -50,22 +50,21 @@ class Guest extends Component {
       <div>
         <div>
           <nav className="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-            <a className="navbar-brand" href="#">Little Birdie</a>
+            <a className="navbar-brand" href="/#/login">Little Birdie</a>
           </nav>
-        </div>
-
-
-        <div className="jumbotron">
-          <h1>Twitter Username:</h1>
-          <form className="form-inline" onSubmit={this.handleSubmit}>
-            <input className="form-control" aria-label="Username" onChange={this.handleChange}></input>
-            <button className="btn btn-lg btn-primary" display="inline">Search</button>
-          </form>
         </div>
 
         <main role="main" className="container" style={{paddingTop:75}}>
           <div className="starter-template text-center">
-            <h1>Welcome, Guest. </h1>
+            <h1 className="h2 mb-3 font-weight-normal">Welcome, Guest. </h1>
+            <div className="jumbotron">
+              <form className="form-inline" onSubmit={this.handleSubmit}>
+                <h3 className="h2 mb-3 font-weight-normal">Twitter Username:</h3>
+  
+                <input className="form-control" aria-label="Username" onChange={this.handleChange}></input>
+                <button className="btn btn-lg btn-primary" display="inline">Search</button>
+              </form>
+            </div>
             {this.state.done ? <p className="lead">Here are the results of your personality analysis : </p> : null}
           </div>
 

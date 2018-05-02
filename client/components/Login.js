@@ -31,7 +31,7 @@ class Login extends Component {
       <div>
         <div>
           <nav className="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-            <a className="navbar-brand" href="#">Little Birdie</a>
+            <a className="navbar-brand" href="/#/login">Little Birdie</a>
           </nav>
         </div>
         
@@ -45,7 +45,7 @@ class Login extends Component {
 
               <h1 className="h3 mb-3 font-weight-normal">Or Continue as a Guest</h1>
 
-              <button className="btn btn-lg btn-primary btn-block" type="button" onClick={() => this.props.history.push('/guest')}>Guest Login</button>
+              <button className="btn btn-lg btn-primary" type="button" onClick={() => this.props.history.push('/guest')}>Guest Login</button>
 
             </form>
           </div>

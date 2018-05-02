@@ -46,7 +46,7 @@ class App extends Component {
       <div>
         <div>
           <nav className="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-            <a className="navbar-brand" href="#">Little Birdie</a>
+            <a className="navbar-brand" href="/#/login">Little Birdie</a>
           </nav>
         </div>
 
