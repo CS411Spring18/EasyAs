@@ -17,7 +17,7 @@ class Login extends Component {
   handleChange(event) {
     this.setState({value: event.target.value});
   }
-  
+
   handleClick(event) {
     axios.get('/home')
       .then(function (response) {
@@ -42,6 +42,11 @@ class Login extends Component {
               <h1 className="h2 mb-3 font-weight-normal">Welcome to Little Birdie</h1>
 
               <button className="btn btn-lg btn-primary" type="button" onClick={this.handleClick}>Twitter Login</button>
+
+              <h1 className="h3 mb-3 font-weight-normal">Or Continue as a Guest</h1>
+
+              <button className="btn btn-lg btn-primary btn-block" type="button" onClick={() => this.props.history.push('/guest')}>Guest Login</button>
+
             </form>
           </div>
         </main>

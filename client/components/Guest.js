@@ -5,7 +5,7 @@ var querystring = require('querystring');
 var BarChart = require("react-chartjs").Bar;
 var Modal = require('react-bootstrap').Modal;
 
-class App extends Component {
+class Guest extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -17,15 +17,19 @@ class App extends Component {
       matches: [],
       username: '',
     };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  componentWillMount() {
-    this.setState({
-      username: new URL(window.location.href).searchParams.get("user"),
-    });
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit() {
     axios.post('/fetchUser',
       querystring.stringify({
-        name: new URL(window.location.href).searchParams.get("user").toLowerCase(),
+        name: this.state.value,
       }), {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -50,10 +54,19 @@ class App extends Component {
           </nav>
         </div>
 
+
+        <div className="jumbotron">
+          <h1>Twitter Username:</h1>
+          <form className="form-inline" onSubmit={this.handleSubmit}>
+            <input className="form-control" aria-label="Username" onChange={this.handleChange}></input>
+            <button className="btn btn-lg btn-primary" display="inline">Search</button>
+          </form>
+        </div>
+
         <main role="main" className="container" style={{paddingTop:75}}>
           <div className="starter-template text-center">
-            <h1>Welcome, {this.state.username}. </h1>
-            <p className="lead">Here are the results of your personality analysis :</p>
+            <h1>Welcome, Guest. </h1>
+            {this.state.done ? <p className="lead">Here are the results of your personality analysis : </p> : null}
           </div>
 
           {this.state.done ? <Chart openness={this.state.personality[0].percentile} conscientiousness={this.state.personality[1].percentile} ext={this.state.personality[2].percentile} agree={this.state.personality[3].percentile} emo={this.state.personality[4].percentile}/> : null}
@@ -121,8 +134,8 @@ class Chart extends Component {
     };
 
     return (
-      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions}  width="600" height="250" />
-    );
+      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250"/>
+    )
   }
 }
 
@@ -137,19 +150,9 @@ class Results extends Component {
       personality: [props.data[0].similarity*100, props.data[1].similarity*100, props.data[2].similarity*100, props.data[3].similarity*100, props.data[4].similarity*100],
       names: [props.data[0].username, props.data[1].username, props.data[2].username, props.data[3].username, props.data[4].username],
     };
-
-    this.onClickFunction = this.onClickFunction.bind(this);
-
   }
-
-  onClickFunction(event) {
-    let activeBars = this.refs.charts1.getBarsAtEvent(event);
-    let userLabel = activeBars[ 0 ].label;
-    const url = "https://twitter.com/" + userLabel;
-    window.open(url);
-  };  
-
   render() {
+    console.log('hello');
     console.log(this.props.data);
 
     var chartInfo = {
@@ -162,8 +165,7 @@ class Results extends Component {
           }
         ]
       },
-      chartOptions: {
-        scales: {
+      chartOptions: {scales: {
         yAxes: [{
           barPercentage: 0.5,
           gridLines: {
@@ -190,17 +192,17 @@ class Results extends Component {
           rectangle: {
             borderSkipped: 'left',
           }
-        },
+        }
       }
     };
     return (
-      <div id="results">
-        <h1 >Results</h1>
-        <p className="lead">Here are your most similar followers:</p>
-        <BarChart ref="charts1" data={chartInfo.chartData} options={chartInfo.chartOptions} onClick={this.onClickFunction} width="600" height="250" />
-      </div>
+    <div id="results">
+      <h1 >Results</h1>
+      <p className="lead">Here are your most similar followers:</p>
+      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250"/>
+    </div>
 
-    );
+    )
   }
 }
-export default App;
+export default Guest;
