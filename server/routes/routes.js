@@ -35,6 +35,28 @@ router.get('/', function (req, res) {
   res.render('index', {user: user});
 });
 
+router.route('/fetchUserPersonality')
+.post(function(req,res) {
+  const user = new Promise(function(resolve, reject) {
+    User.findOne({ name: req.body.name }, function (err, response) {
+      if (err) {
+        reject(err);
+      // If there's no data in the database create a user
+      } else if (response == null) {
+        // calls createUser helper function which returns a promise
+        let userPromise = createUser(req.body.name);
+        userPromise.then((newUser) => {
+          res.send(newUser);
+        })
+        .catch((error) => res.status(500).json({ error: error }));
+        // If we find a user pass it on
+      } else {
+        res.send(response);
+      }
+    });
+  });
+});
+
 
 // Gets the user's tweets, personality, matches and saves them to the db
 router.route('/fetchUser')
@@ -153,7 +175,7 @@ router.get('/sessions/callback', function (req, res) {
         console.log("User saved");
       });
       */
-      
+
       var user = encodeURIComponent(results.screen_name);
       res.redirect('/?user=' + user);
     }

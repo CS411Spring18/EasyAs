@@ -14,7 +14,6 @@ class Guest extends Component {
       resultsShow: false,
       personality: [],  //
       done: false,
-      matches: [],
       username: '',
     };
 
@@ -27,7 +26,7 @@ class Guest extends Component {
   }
 
   handleSubmit() {
-    axios.post('/fetchUser',
+    axios.post('/fetchUserPersonality',
       querystring.stringify({
         name: this.state.value,
       }), {
@@ -38,7 +37,6 @@ class Guest extends Component {
         this.setState({
           username: response.data.name,
           personality: response.data.personality,
-          matches: response.data.matches,
           resultsShow: true,
           done: true,
         });
@@ -60,7 +58,7 @@ class Guest extends Component {
             <div className="jumbotron">
               <form className="form-inline" onSubmit={this.handleSubmit}>
                 <h3 className="h2 mb-3 font-weight-normal">Twitter Username:</h3>
-  
+
                 <input className="form-control" aria-label="Username" onChange={this.handleChange}></input>
                 <button className="btn btn-lg btn-primary" display="inline">Search</button>
               </form>
@@ -71,8 +69,6 @@ class Guest extends Component {
           {this.state.done ? <Chart openness={this.state.personality[0].percentile} conscientiousness={this.state.personality[1].percentile} ext={this.state.personality[2].percentile} agree={this.state.personality[3].percentile} emo={this.state.personality[4].percentile}/> : null}
           {/*<button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleSubmit.bind(this)}>Find Your Top 5 Matches</button>*/}
           <hr/>
-
-          {this.state.done ? <Results data={this.state.matches} /> : null}
         </main>
       </div>
     );
@@ -96,7 +92,10 @@ class Chart extends Component {
         datasets: [
           {
             label: "Percentile",
-            backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+            fillColor: [ "#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850" ],
+            strokeColor: "rgba(220,220,220,0.8)",
+            highlightFill: "rgba(220,220,220,0.75)",
+            highlightStroke: "rgba(220,220,220,1)",
             data: this.state.personality
           }
         ]
@@ -133,8 +132,8 @@ class Chart extends Component {
     };
 
     return (
-      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250"/>
-    )
+      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions}  width="600" height="250" />
+    );
   }
 }
 
