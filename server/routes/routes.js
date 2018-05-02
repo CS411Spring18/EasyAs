@@ -140,6 +140,8 @@ router.get('/sessions/callback', function (req, res) {
     } else {
       req.session.oauthAccessToken = oauthAccessToken;
       req.session.oauthAccessTokenSecret = oauthAccessTokenSecret;
+
+      /*
       var newUser = new User({
         name: results.screen_name,
       });
@@ -150,6 +152,8 @@ router.get('/sessions/callback', function (req, res) {
         };
         console.log("User saved");
       });
+      */
+      
       var user = encodeURIComponent(results.screen_name);
       res.redirect('/?user=' + user);
     }

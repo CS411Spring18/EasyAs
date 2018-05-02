@@ -52,7 +52,7 @@ class App extends Component {
 
         <main role="main" className="container" style={{paddingTop:75}}>
           <div className="starter-template text-center">
-            <h1>Welcome, Jacob. </h1>
+            <h1>Welcome, {this.state.username}. </h1>
             <p className="lead">Here are the results of your personality analysis :</p>
           </div>
 
@@ -121,8 +121,8 @@ class Chart extends Component {
     };
 
     return (
-      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250"/>
-    )
+      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions}  width="600" height="250" />
+    );
   }
 }
 
@@ -137,9 +137,19 @@ class Results extends Component {
       personality: [props.data[0].similarity*100, props.data[1].similarity*100, props.data[2].similarity*100, props.data[3].similarity*100, props.data[4].similarity*100],
       names: [props.data[0].username, props.data[1].username, props.data[2].username, props.data[3].username, props.data[4].username],
     };
+
+    this.onClickFunction = this.onClickFunction.bind(this);
+
   }
+
+  onClickFunction(event) {
+    let activeBars = this.refs.charts1.getBarsAtEvent(event);
+    let userLabel = activeBars[ 0 ].label;
+    const url = "https://twitter.com/" + userLabel;
+    window.open(url);
+  };  
+
   render() {
-    console.log('hello');
     console.log(this.props.data);
 
     var chartInfo = {
@@ -152,7 +162,8 @@ class Results extends Component {
           }
         ]
       },
-      chartOptions: {scales: {
+      chartOptions: {
+        scales: {
         yAxes: [{
           barPercentage: 0.5,
           gridLines: {
@@ -179,17 +190,17 @@ class Results extends Component {
           rectangle: {
             borderSkipped: 'left',
           }
-        }
+        },
       }
     };
     return (
-    <div id="results">
-      <h1 >Results</h1>
-      <p className="lead">Here are your most similar followers:</p>
-      <BarChart data={chartInfo.chartData} options={chartInfo.chartOptions} width="600" height="250"/>
-    </div>
+      <div id="results">
+        <h1 >Results</h1>
+        <p className="lead">Here are your most similar followers:</p>
+        <BarChart ref="charts1" data={chartInfo.chartData} options={chartInfo.chartOptions} onClick={this.onClickFunction} width="600" height="250" />
+      </div>
 
-    )
+    );
   }
 }
 export default App;
