@@ -13,7 +13,7 @@ class App extends Component {
       tweets: [],
       resultsShow: false,
       personality: [],  //
-      twitterName: "jacobkozol", // temp twitter name
+      twitterName: '', // temp twitter name
       done: false,
       matches: [],
       username: '',
@@ -24,8 +24,7 @@ class App extends Component {
   componentWillMount() {
     axios.post('/fetchUser',
       querystring.stringify({
-        name: this.state.twitterName,
-
+        name: new URL(window.location.href).searchParams.get("user").toLowerCase(),
       }), {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -43,7 +42,6 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state);
     return (
       <div>
         <div>
