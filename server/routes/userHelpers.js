@@ -75,8 +75,8 @@ const createUser = (username) =>
 // Watson login requirements
 const PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
 const personalityInsights = new PersonalityInsightsV3({
-  username: '44c8ab6a-b6ae-427f-a1a2-9f9cd27074e9',
-  password: 'Bjt6QFVRkUKj',
+  username: '5f2daa70-917c-4de7-9715-9e9d8c53dafe',
+  password: 'Nfx7QkonMZoM',
   version_date: '2017-10-13'
 });
 
