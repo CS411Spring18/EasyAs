@@ -54,13 +54,13 @@ class App extends Component {
           <div className="starter-template text-center">
             <h1>Welcome, {this.state.username}. </h1>
             <p className="lead">Here are the results of your personality analysis :</p>
-          </div>
-
-          {this.state.done ? <Chart openness={this.state.personality[0].percentile} conscientiousness={this.state.personality[1].percentile} ext={this.state.personality[2].percentile} agree={this.state.personality[3].percentile} emo={this.state.personality[4].percentile}/> : null}
+            {this.state.done ? <Chart openness={this.state.personality[0].percentile} conscientiousness={this.state.personality[1].percentile} ext={this.state.personality[2].percentile} agree={this.state.personality[3].percentile} emo={this.state.personality[4].percentile}/> : null}
           {/*<button className="btn btn-lg btn-primary btn-block" type="submit" onClick={this.handleSubmit.bind(this)}>Find Your Top 5 Matches</button>*/}
           <hr/>
 
           {this.state.done ? <Results data={this.state.matches} /> : null}
+          </div>
+
         </main>
       </div>
     );

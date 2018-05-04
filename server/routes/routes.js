@@ -8,10 +8,11 @@ const bodyParser = require('body-parser');
 const User = require('../../models/User');
 const oauth = require('oauth');
 const bearerToken = require('../../config.js').bearerToken;
-const { createUser, euclideanDistance } = require('./userHelpers.js')
+const twitterConfig = require('../../config.js');
+const { createUser, euclideanDistance } = require('./userHelpers.js');
 // Get the twitter consumer key and secret
-var twitterConsumerKey = "nM9Ti3fALEAFUsZaqKpkFGmoG";
-var twitterConsumerSecret = "ecEiAeVVbmJwGFkeiek1SprGcRswaNkKaswuTfSOo4zQ1JjiXY";
+var twitterConsumerKey = twitterConfig.consumer_key;
+var twitterConsumerSecret = twitterConfig.consumer_secret;
 
 // Create the OAuth
 var consumer = new oauth.OAuth(
